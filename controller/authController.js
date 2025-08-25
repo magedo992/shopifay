@@ -17,8 +17,12 @@ console.log('i take the body');
   }
 
   const activationCode = generateCode();
-  const imageURL=req.file.path;
-  const imagePublicId=req.file.filename;
+let imageURL = null;
+  let imagePublicId = null;
+  if (req.file) {
+    imageURL = req.file.path;
+    imagePublicId = req.file.filename;
+  }
 
   const user = await User.create({
     name,

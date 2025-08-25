@@ -11,8 +11,10 @@ const app =express();
 const db=require('./dbconfig/database');
 const mountRouter = require('./route/indexRoute');
 db.connectToDatabase();
-app.use(express.json())
-app.use(cors())
+app.use(express.json());
+app.use(cors({
+    origin:'*'
+}));
 
 
 mountRouter(app);
@@ -21,7 +23,7 @@ const swaggerSpec = YAML.load('./swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use((err,req,res,next)=>{
 const message=err.message;
-const statuscode=err.statusCode;
+const statuscode=err.statusCode||500;
 console.log(message);
 
 res.status(statuscode).json({"message":message})
