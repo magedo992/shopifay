@@ -24,7 +24,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use((err,req,res,next)=>{
 const message=err.message;
 const statuscode=err.statusCode||500;
-console.log(message);
+
 
 res.status(statuscode).json({"message":message})
 next();

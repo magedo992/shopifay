@@ -103,7 +103,7 @@ paths:
               properties:
                 email:
                   type: string
-                  example: john@example.com
+                  example: ahmedmagedha@gmail.com
                 code:
                   type: string
                   example: "123456"
@@ -124,10 +124,10 @@ paths:
               properties:
                 email:
                   type: string
-                  example: john@example.com
+                  example: ahmedmagedha@gmail.com
                 password:
                   type: string
-                  example: secret123
+                  example: ahmed123
       responses:
         '200':
           description: Login success
@@ -182,7 +182,7 @@ paths:
         '200':
           description: Code verified
 
-  /api/auth/reset-password:
+  /api/v1/auth/reset-password:
     post:
       summary: Reset password
       tags: [Auth]
@@ -206,7 +206,96 @@ paths:
         '200':
           description: Password reset success
 
-  /api/products:
+  /api/v1/category:
+  
+    get:
+      summary: Get all categories
+      tags: [Category]
+      responses:
+        '200':
+          description: List of all categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    name:
+                      type: string
+                      example: Laptops
+                    description:
+                      type: string
+                      example: All kinds of laptops
+    post:
+      summary: Create new category
+      tags: [Category]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Phones
+                description:
+                  type: string
+                  example: All mobile phones
+      responses:
+        '201':
+          description: Category created
+        '401':
+          description: Error creating category
+
+  /api/v1/category/{id}:
+    put:
+      summary: Update category
+      tags: [Category]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Tablets
+                description:
+                  type: string
+                  example: All types of tablets
+      responses:
+        '200':
+          description: Category updated
+        '404':
+          description: Category not found
+
+    delete:
+      summary: Delete category
+      tags: [Category]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category deleted
+        '404':
+          description: Category not found
+
+  /api/v1/product:
     get:
       summary: List products
       tags: [Products]
@@ -236,17 +325,38 @@ paths:
                 name:
                   type: string
                   example: Laptop
+                description:
+                  type: string
+                  example: Gaming Laptop with RTX 4060
+                catId:
+                  type: string
+                  example: 64f3a12b45f8de9d3c7a8e22
                 price:
                   type: number
                   example: 1200
-                image:
-                  type: string
-                  format: binary
+                stock:
+                  type: number
+                  example: 10
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
       responses:
         '201':
           description: Product created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product created successfully
+                  data:
+                    $ref: '#/components/schemas/Product'
 
-  /api/products/{id}:
+  /api/v1/product/{id}:
     get:
       summary: Get product by ID
       tags: [Products]
@@ -263,5 +373,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+    put:
+      summary: Update product
+      description: Update product info and optionally replace images. JWT required.
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Updated Laptop
+                description:
+                  type: string
+                  example: Updated description
+                catId:
+                  type: string
+                  example: 64f3a12b45f8de9d3c7a8e22
+                price:
+                  type: number
+                  example: 1500
+                stock:
+                  type: number
+                  example: 5
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product updated successfully
+                  data:
+                    $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+    delete:
+      summary: Delete product
+      description: Delete product and remove images from Cloudinary. JWT required.
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product deleted successfully
         '404':
           description: Product not found
